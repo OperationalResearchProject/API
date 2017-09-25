@@ -76,10 +76,10 @@ void TSFitnessTransaction::Process() {
      */
     reply_.set_id(request_.id());
 
-    std::vector<std::string> neighborsOfBest = getAllNeighbors(request_.solutions(bestI));
+    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestI));
 
-    for (auto neighbor:neighborsOfBest){
-        reply_.add_solutions(neighbor);
+    for (Neighbor neighbor:neighborsOfBest){
+        reply_.add_solutions(neighbor.solution());
     }
 
     // todo : add the move in tabu_list
