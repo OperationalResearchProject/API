@@ -82,7 +82,7 @@ void TSFitnessTransaction::Process() {
         reply_.add_solutions(neighbor.solution());
     }
 
-    // todo : add the move in tabu_list
+    // todo : add the move (of the bestLocalSOlution) in tabu_list
 
     responder_.Finish(reply_, Status::OK, this);
 }

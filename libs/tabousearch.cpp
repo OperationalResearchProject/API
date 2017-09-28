@@ -17,9 +17,9 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
      * N(s) with i=2 = {3-2-1-4; 1-3-2-4; 1-2-4-3}
      * N(s) with i=3 = {4-2-3-1; 1-4-3-2; 1-2-4-3}
      */
-    /**
-     * todo : save moves & neighbors & return {sol = ""; movei = ""; movej=""}
-     */
+
+    // Clean neighbors of the transaction
+    cleanAllNeighbors(neighbor_coll, transaction_id);
 
     std::vector<std::string> vSolution{explode(solution, '-')};
     std::vector<Neighbor> vAllNeighbors;
@@ -37,4 +37,16 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
     }
 
     return vAllNeighbors;
+}
+
+void cleanAllNeighbors(mongocxx::collection neighbor_coll, bsoncxx::oid  transaction_id){
+    bsoncxx::stdx::optional<mongocxx::result::delete_result> result =
+            neighbor_coll.delete_many(
+                    bsoncxx::builder::stream::document{} << "transaction_id"
+                                                         << transaction_id
+                                                         << bsoncxx::builder::stream::finalize);
+
+    /*if(result) {
+        std::cout << result->deleted_count() << "\n";
+    }*/
 }
