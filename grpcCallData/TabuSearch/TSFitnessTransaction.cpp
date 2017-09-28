@@ -76,7 +76,7 @@ void TSFitnessTransaction::Process() {
      */
     reply_.set_id(request_.id());
 
-    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestI));
+    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestI), bsoncxx::oid(request_.id()), neighbor_coll);
 
     for (Neighbor neighbor:neighborsOfBest){
         reply_.add_solutions(neighbor.solution());

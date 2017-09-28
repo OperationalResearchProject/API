@@ -39,7 +39,7 @@ void TSInitTransaction::Process() {
     // set the response
     reply_.set_id(transactionId.get_oid().value.to_string());
 
-    std::vector<Neighbor> vNeighbor = getAllNeighbors(request_.solution());
+    std::vector<Neighbor> vNeighbor = getAllNeighbors(request_.solution(), transactionId.get_oid().value, neighbor_coll);
 
     for (Neighbor neighbor : vNeighbor ) {
         reply_.add_solutions(neighbor.solution());

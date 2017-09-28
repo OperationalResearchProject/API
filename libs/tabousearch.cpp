@@ -9,7 +9,7 @@ bool moveIsAllowed(){
     // TODO
 }
 
-std::vector<Neighbor> getAllNeighbors(std::string solution){
+std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll){
     /**
      * Example : s = 1-2-3-4
      * N(s) with i=0 = {2-1-3-4; 3-1-2-4; 4-2-3-1}
@@ -31,7 +31,7 @@ std::vector<Neighbor> getAllNeighbors(std::string solution){
                 std::string tmp = vNeighbor[i];
                 vNeighbor[i] = vNeighbor[j];
                 vNeighbor[j] = tmp;
-                vAllNeighbors.push_back(Neighbor(vectorToString(vNeighbor), i, j));
+                vAllNeighbors.push_back(Neighbor(neighbor_coll, transaction_id, vectorToString(vNeighbor), i, j));
             }
         }
     }

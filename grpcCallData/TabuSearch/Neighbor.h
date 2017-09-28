@@ -4,13 +4,13 @@
 
 #include <iostream>
 #include <string>
+#include <mongocxx/collection.hpp>
 
 
 class Neighbor {
 
 public:
-    Neighbor(const std::string & solution, int move_i, int move_j)
-        :solution_(solution), moveI(move_i), moveJ(move_j){};
+    Neighbor(mongocxx::collection neighbor_collection, bsoncxx::oid  transaction_id, std::string solution, int move_i, int move_j);
 
     const std::string solution(){ return solution_;};
 private:

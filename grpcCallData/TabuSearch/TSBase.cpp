@@ -5,4 +5,5 @@ TSBase::TSBase(ts::TabouSearchService::AsyncService *service, ServerCompletionQu
     transac_coll = db[TRANSACTION_COLLECTION];
     fitness_coll = db[FITNESS_COLLECTION];
     tabu_list_coll = db[TABULIST_COLLECTION];
+    neighbor_coll = db[NEIGHBOR_COLLECTION];
 }

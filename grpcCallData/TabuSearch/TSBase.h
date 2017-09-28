@@ -11,6 +11,7 @@
 #define TRANSACTION_COLLECTION "transactions"
 #define FITNESS_COLLECTION "fitnesses"
 #define TABULIST_COLLECTION "tabulist"
+#define NEIGHBOR_COLLECTION "neighbors"
 
 class TSBase : public CallData{
 public:
@@ -19,6 +20,7 @@ public:
 protected:
     mongocxx::collection transac_coll;
     mongocxx::collection fitness_coll;
+    mongocxx::collection neighbor_coll;
     mongocxx::collection tabu_list_coll;
     mongocxx::database db_;
     ServerContext ctx_;
