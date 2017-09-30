@@ -16,6 +16,7 @@ void TSInitTransaction::Process() {
     documentTransaction << "solution_size" << request_.solutionsize();
     documentTransaction << "type" << request_.type();
     documentTransaction << "algorithm" << "tabou_search";
+    documentTransaction << "iteration" << 0;
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     documentTransaction << "created_at" << bsoncxx::types::b_date(now);
     bsoncxx::types::value  transactionId = transac_coll.insert_one(documentTransaction.view())->inserted_id();

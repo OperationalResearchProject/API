@@ -16,6 +16,16 @@ void TSFitnessTransaction::Process() {
         return;
     }
 
+    // increment the transaction
+    transac_coll.update_one(
+            bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(request_.id())<< bsoncxx::builder::stream::finalize,
+            bsoncxx::builder::stream::document{} << "$inc" <<
+                                                           bsoncxx::builder::stream::open_document
+                                                                 <<"iteration" << 1
+                                                           <<bsoncxx::builder::stream::close_document
+                                                 << bsoncxx::builder::stream::finalize
+    );
+
     // Find the best neighbor for this iteration
     int bestI = 0;
     double bestFitnessLocal = request_.fitnesses(0);
