@@ -5,12 +5,13 @@
 #include <iostream>
 #include <string>
 #include <mongocxx/collection.hpp>
+#include "../../libs/helper.h"
 
 
 class Neighbor {
 
 public:
-    Neighbor(mongocxx::collection neighbor_collection, bsoncxx::oid  transaction_id, std::string solution, int move_i, int move_j);
+    Neighbor(mongocxx::collection neighbor_collection, mongocxx::collection transac_collection, bsoncxx::oid  transaction_id, std::string solution, int move_i, int move_j);
 
     const std::string solution(){ return solution_;};
 private:

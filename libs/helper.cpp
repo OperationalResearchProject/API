@@ -57,3 +57,20 @@ const std::string vectorToString(std::vector<std::string> v){
 
     return  oss.str();
 }
+
+const int getIteration(mongocxx::collection transac_collection, bsoncxx::oid  transaction_id){
+
+    auto filterTransactionToSearch = bsoncxx::builder::stream::document{} ;
+    filterTransactionToSearch << "_id" << transaction_id;
+
+    mongocxx::stdx::optional<bsoncxx::document::value> view = transac_collection.find_one(filterTransactionToSearch.view());
+
+    if(view){
+        bsoncxx::document::view viewTransac = *view;
+        bsoncxx::document::element elt = viewTransac["iteration"];
+
+        return elt.get_int32();
+    } else{
+        return -1;
+    }
+}

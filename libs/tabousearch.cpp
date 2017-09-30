@@ -9,7 +9,7 @@ bool moveIsAllowed(){
     // TODO
 }
 
-std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll){
+std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll, mongocxx::collection transac_coll){
     /**
      * Example : s = 1-2-3-4
      * N(s) with i=0 = {2-1-3-4; 3-1-2-4; 4-2-3-1}
@@ -17,9 +17,6 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
      * N(s) with i=2 = {3-2-1-4; 1-3-2-4; 1-2-4-3}
      * N(s) with i=3 = {4-2-3-1; 1-4-3-2; 1-2-4-3}
      */
-
-    // Clean neighbors of the transaction
-    cleanAllNeighbors(neighbor_coll, transaction_id);
 
     std::vector<std::string> vSolution{explode(solution, '-')};
     std::vector<Neighbor> vAllNeighbors;
@@ -31,7 +28,7 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
                 std::string tmp = vNeighbor[i];
                 vNeighbor[i] = vNeighbor[j];
                 vNeighbor[j] = tmp;
-                vAllNeighbors.push_back(Neighbor(neighbor_coll, transaction_id, vectorToString(vNeighbor), i, j));
+                vAllNeighbors.push_back(Neighbor(neighbor_coll, transac_coll, transaction_id, vectorToString(vNeighbor), i, j));
             }
         }
     }

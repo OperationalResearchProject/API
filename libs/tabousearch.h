@@ -6,7 +6,7 @@
 
 void addMoveInTabuList();
 bool moveIsAllowed();
-std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll);
+std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll, mongocxx::collection transac_coll);
 void cleanAllNeighbors(mongocxx::collection neighbor_coll, bsoncxx::oid  transaction_id);
 
 #endif //OPERATIONALRESEARCHAPI_TABOUSEARCH_H

@@ -27,12 +27,12 @@ void TSFitnessTransaction::Process() {
     );
 
     // Find the best neighbor for this iteration
-    int bestI = 0;
-    double bestFitnessLocal = request_.fitnesses(0);
+    int bestINeighbor = 0;
+    double bestFitnessNeighbor = request_.fitnesses(0);
     for (int i = 0; i < request_.solutions_size(); ++i) {
-        if(request_.fitnesses(i) < bestFitnessLocal){
-            bestFitnessLocal = request_.fitnesses(i);
-            bestI = i;
+        if(request_.fitnesses(i) < bestFitnessNeighbor){
+            bestFitnessNeighbor = request_.fitnesses(i);
+            bestINeighbor = i;
         }
     }
 
@@ -55,14 +55,13 @@ void TSFitnessTransaction::Process() {
 
 
         // If the new fitness is better (Case of minimization) than the actual best fitness, then we replace the solution
-        if (bestFitness > bestFitnessLocal) {
-            std::cout << "best global : " << bestFitness << std::endl;
-            std::cout << "best local  : " << bestFitnessLocal << std::endl;
+        if (bestFitness > bestFitnessNeighbor) {
 
             bsoncxx::builder::stream::document documentFitnessToInsert{};
             documentFitnessToInsert << "transaction_id" << request_.id();
-            documentFitnessToInsert << "solution" << request_.solutions(bestI);
-            documentFitnessToInsert << "fitness" << bestFitnessLocal;
+            documentFitnessToInsert << "solution" << request_.solutions(bestINeighbor);
+            documentFitnessToInsert << "fitness" << bestFitnessNeighbor;
+            documentFitnessToInsert << "params" << "";
 
 
             bsoncxx::types::value newBestFitnessId = fitness_coll.insert_one(
@@ -80,19 +79,22 @@ void TSFitnessTransaction::Process() {
         }
     }
 
-
+    // todo : add the move (of the bestLocalSOlution) in tabu_list
+    addMoveInTabuList();
+    std::cout << "best fitness local  : " << bestFitnessNeighbor << std::endl;
+    std::cout << "best solution local : " << request_.solutions(bestINeighbor) << std::endl;
+    // todo : pk pu dans les voisins ?
     /*
      * set the response
      */
     reply_.set_id(request_.id());
 
-    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestI), bsoncxx::oid(request_.id()), neighbor_coll);
+    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestINeighbor), bsoncxx::oid(request_.id()), neighbor_coll, transac_coll);
 
     for (Neighbor neighbor:neighborsOfBest){
         reply_.add_solutions(neighbor.solution());
     }
 
-    // todo : add the move (of the bestLocalSOlution) in tabu_list
 
     responder_.Finish(reply_, Status::OK, this);
 }
