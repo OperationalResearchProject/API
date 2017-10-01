@@ -1,9 +1,21 @@
 #include "tabousearch.h"
 
 
-void addMoveInTabuList(mongocxx::collection tabu_coll, const std::string solution){
+void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neighbor_coll, const std::string solution, const int iteration){
+    // todo : search neighbor with sol and iteration
+
+    auto filter = bsoncxx::builder::stream::document{};
+    filter << "solution" << solution;
+    filter << "iteration" << iteration;
+
+    auto docFind = neighbor_coll.find_one(filter.view());
+
+    int move_i = docFind.value().view()["move_i"].get_int32();
+    int move_j = docFind.value().view()["move_j"].get_int32();
+
     bsoncxx::builder::stream::document documentTabu{};
-    documentTabu << "solution" << solution;
+    documentTabu << "move_i" << move_i;
+    documentTabu << "move_j" << move_j;
     documentTabu << "time" << 30;
 
     tabu_coll.insert_one(documentTabu.view());
@@ -11,6 +23,7 @@ void addMoveInTabuList(mongocxx::collection tabu_coll, const std::string solutio
 
 bool moveIsAllowed(){
     // TODO
+    return true;
 }
 
 std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll, mongocxx::collection transac_coll){
