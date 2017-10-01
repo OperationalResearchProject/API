@@ -2,7 +2,6 @@
 
 
 void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neighbor_coll, const std::string solution, const int iteration){
-    // todo : search neighbor with sol and iteration
 
     auto filter = bsoncxx::builder::stream::document{};
     filter << "solution" << solution;
@@ -19,9 +18,16 @@ void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neig
     documentTabu << "time" << 30;
 
     tabu_coll.insert_one(documentTabu.view());
+
+    bsoncxx::builder::stream::document documentTabuInversed{};
+    documentTabuInversed << "move_i" << move_j;
+    documentTabuInversed << "move_j" << move_i;
+    documentTabuInversed << "time" << 30;
+
+    tabu_coll.insert_one(documentTabuInversed.view());
 }
 
-bool moveIsAllowed(){
+bool moveIsAllowed(mongocxx::collection tabu_coll, int i, int j){
     // TODO
     return true;
 }
