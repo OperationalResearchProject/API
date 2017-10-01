@@ -1,8 +1,12 @@
 #include "tabousearch.h"
 
 
-void addMoveInTabuList(){
-    // TODO
+void addMoveInTabuList(mongocxx::collection tabu_coll, const std::string solution){
+    bsoncxx::builder::stream::document documentTabu{};
+    documentTabu << "solution" << solution;
+    documentTabu << "time" << 30;
+
+    tabu_coll.insert_one(documentTabu.view());
 }
 
 bool moveIsAllowed(){

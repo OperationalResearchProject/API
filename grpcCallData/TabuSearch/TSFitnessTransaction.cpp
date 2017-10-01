@@ -80,12 +80,12 @@ void TSFitnessTransaction::Process() {
     }
 
     // todo : add the move (of the bestLocalSOlution) in tabu_list
-    addMoveInTabuList();
+    addMoveInTabuList(tabu_list_coll, request_.solutions(bestINeighbor));
     std::cout << "best fitness local  : " << bestFitnessNeighbor << std::endl;
     std::cout << "best solution local : " << request_.solutions(bestINeighbor) << std::endl;
-    // todo : pk pu dans les voisins ?
+
     /*
-     * set the response
+     * set the response with neighbors of the best current Neighbors
      */
     reply_.set_id(request_.id());
 
