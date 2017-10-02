@@ -80,7 +80,7 @@ void TSFitnessTransaction::Process() {
     }
 
     // todo : add the move of the bestLocalSolution (at the previous iteration) in tabu_list
-    addMoveInTabuList(tabu_list_coll, neighbor_coll, request_.solutions(bestINeighbor), getIteration(transac_coll, bsoncxx::oid(request_.id())) - 1);
+    addMoveInTabuList(tabu_list_coll, neighbor_coll, request_.solutions(bestINeighbor), getIteration(transac_coll, bsoncxx::oid(request_.id())) - 1, bsoncxx::oid(request_.id()));
     std::cout << "best fitness local  : " << bestFitnessNeighbor << std::endl;
     std::cout << "best solution local : " << request_.solutions(bestINeighbor) << std::endl;
 
@@ -89,7 +89,7 @@ void TSFitnessTransaction::Process() {
      */
     reply_.set_id(request_.id());
 
-    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestINeighbor), bsoncxx::oid(request_.id()), neighbor_coll, transac_coll);
+    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestINeighbor), bsoncxx::oid(request_.id()), neighbor_coll, transac_coll, tabu_list_coll);
 
     for (Neighbor neighbor:neighborsOfBest){
         reply_.add_solutions(neighbor.solution());
