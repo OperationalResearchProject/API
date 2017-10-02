@@ -17,7 +17,7 @@ void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neig
     documentTabu << "transaction_id" << transaction_id;
     documentTabu << "move_i" << move_i;
     documentTabu << "move_j" << move_j;
-    documentTabu << "time" << 30;
+    documentTabu << "time" << iteration+2; // todo random time between iteration and M
 
     tabu_coll.insert_one(documentTabu.view());
 
@@ -25,16 +25,19 @@ void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neig
     documentTabuInversed << "transaction_id" << transaction_id;
     documentTabuInversed << "move_i" << move_j;
     documentTabuInversed << "move_j" << move_i;
-    documentTabuInversed << "time" << 30;
+    documentTabuInversed << "time" << iteration+2; // todo random time between iteration and M
 
     tabu_coll.insert_one(documentTabuInversed.view());
 }
 
-bool moveIsAllowed(mongocxx::collection tabu_coll, int i, int j, const bsoncxx::oid transaction_id){
+bool moveIsAllowed(mongocxx::collection tabu_coll, int i, int j, const bsoncxx::oid transaction_id, const int iteration){
     auto filter = bsoncxx::builder::stream::document{};
     filter << "move_i" << i;
     filter << "move_j" << j;
     filter << "transaction_id" << transaction_id;
+    filter << "time" << bsoncxx::builder::stream::open_document
+            <<"$gt" << iteration
+            <<bsoncxx::builder::stream::close_document;
 
 
     return !tabu_coll.find_one(filter.view());
@@ -51,11 +54,12 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
 
     std::vector<std::string> vSolution{explode(solution, '-')};
     std::vector<Neighbor> vAllNeighbors;
+    int iteration = getIteration(transac_coll, transaction_id);
 
     for (int i=0; i < vSolution.size(); i++) {
         for (int j=0; j < vSolution.size(); j++) {
-            if (i != j && moveIsAllowed(tabu_coll,i,j, transaction_id)){
-                std::cout << "move "<< i <<"-"<<j <<"is allowed : "<< moveIsAllowed(tabu_coll,i,j, transaction_id) << std::endl;
+            if (i != j && moveIsAllowed(tabu_coll,i,j, transaction_id, iteration)){
+                //std::cout << "move "<< i <<"-"<<j <<"is allowed at iteration"<< iteration <<" : "<< moveIsAllowed(tabu_coll,i,j, transaction_id, iteration) << std::endl;
                 std::vector<std::string> vNeighbor = vSolution;
                 std::string tmp = vNeighbor[i];
                 vNeighbor[i] = vNeighbor[j];
@@ -65,7 +69,7 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
         }
     }
 
-    return vAllNeighbors;
+    return vAllNeighbors; // todo : if all neigbors in tabulist, update all tabu times to prevent useless requests
 }
 
 void cleanAllNeighbors(mongocxx::collection neighbor_coll, bsoncxx::oid  transaction_id){
