@@ -13,11 +13,20 @@ void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neig
     int move_i = docFind.value().view()["move_i"].get_int32();
     int move_j = docFind.value().view()["move_j"].get_int32();
 
+    int solution_size = explode(solution,'-').size();
+    int max = ((solution_size * solution_size) / 2) + iteration+1;
+
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+    std::uniform_int_distribution<int> dist(iteration+1, max);
+    int time = dist(engine);
+
+
     bsoncxx::builder::stream::document documentTabu{};
     documentTabu << "transaction_id" << transaction_id;
     documentTabu << "move_i" << move_i;
     documentTabu << "move_j" << move_j;
-    documentTabu << "time" << iteration+2; // todo random time between iteration and M
+    documentTabu << "time" << time;
 
     tabu_coll.insert_one(documentTabu.view());
 
@@ -25,7 +34,7 @@ void addMoveInTabuList(mongocxx::collection tabu_coll, mongocxx::collection neig
     documentTabuInversed << "transaction_id" << transaction_id;
     documentTabuInversed << "move_i" << move_j;
     documentTabuInversed << "move_j" << move_i;
-    documentTabuInversed << "time" << iteration+2; // todo random time between iteration and M
+    documentTabuInversed << "time" << time;
 
     tabu_coll.insert_one(documentTabuInversed.view());
 }
@@ -69,7 +78,7 @@ std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transa
         }
     }
 
-    return vAllNeighbors; // todo : if all neigbors in tabulist, update all tabu times to prevent useless requests
+    return vAllNeighbors; // todo : if all neighbors in tabulist, update all tabu times to prevent useless requests
 }
 
 void cleanAllNeighbors(mongocxx::collection neighbor_coll, bsoncxx::oid  transaction_id){
