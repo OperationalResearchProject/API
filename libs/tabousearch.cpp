@@ -52,7 +52,7 @@ bool moveIsAllowed(mongocxx::collection tabu_coll, int i, int j, const bsoncxx::
     return !tabu_coll.find_one(filter.view());
 }
 
-std::vector<Neighbor> getAllNeighbors(std::string solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll, mongocxx::collection transac_coll, mongocxx::collection tabu_coll){
+std::vector<Neighbor> getAllNeighbors(const std::string& solution, bsoncxx::oid  transaction_id, mongocxx::collection neighbor_coll, mongocxx::collection transac_coll, mongocxx::collection tabu_coll){
     /**
      * Example : s = 1-2-3-4
      * N(s) with i=0 = {2-1-3-4; 3-1-2-4; 4-2-3-1}

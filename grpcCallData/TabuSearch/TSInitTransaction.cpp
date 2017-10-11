@@ -42,8 +42,16 @@ void TSInitTransaction::Process() {
 
     std::vector<Neighbor> vNeighbor = getAllNeighbors(request_.solution(), transactionId.get_oid().value, neighbor_coll, transac_coll, tabu_list_coll);
 
+    int i = 0;
     for (Neighbor neighbor : vNeighbor ) {
-        reply_.add_solutions(neighbor.solution());
+        Solution* s = reply_.add_solutions();
+
+        s->set_mother_solution(request_.solution());
+        s->set_i(neighbor.getI());
+        s->set_j(neighbor.getJ());
+
+        std::cout << reply_.solutions(i).i() << " - "<<reply_.solutions(i).j()<< std::endl;
+        i++;
     }
 
 
