@@ -49,6 +49,8 @@ void TSInitTransaction::Process() {
         s->set_mother_solution(request_.solution());
         s->set_i(neighbor.getI());
         s->set_j(neighbor.getJ());
+        s->set_mother_i(neighbor.getMotherI());
+        s->set_mother_j(neighbor.getMotherJ());
 
         std::cout << reply_.solutions(i).i() << " - "<<reply_.solutions(i).j()<< std::endl;
         i++;

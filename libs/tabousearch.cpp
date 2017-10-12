@@ -73,7 +73,14 @@ std::vector<Neighbor> getAllNeighbors(const std::string& solution, bsoncxx::oid 
                 std::string tmp = vNeighbor[i];
                 vNeighbor[i] = vNeighbor[j];
                 vNeighbor[j] = tmp;
-                vAllNeighbors.push_back(Neighbor(neighbor_coll, transac_coll, transaction_id, vectorToString(vNeighbor), i, j));
+                std::string solution_child = vectorToString(vNeighbor);
+                int i_mother, j_mother; // todo : comment trouver i_moth et j_moth avec solution_moth ???
+                // todo : neighbor_coll.find(solution_mother, getPreviousIteration()) car solution_mother a elle meme été un voison dans l'iteration précédente
+
+                Neighbor neigh(Neighbor(transaction_id, solution_child, i, j, i_mother, j_mother));
+                neigh.save(neighbor_coll, transac_coll);
+
+                vAllNeighbors.push_back(neigh);
             }
         }
     }
