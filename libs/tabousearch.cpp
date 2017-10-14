@@ -74,7 +74,10 @@ std::vector<Neighbor> getAllNeighbors(const std::string& solution, bsoncxx::oid 
                 vNeighbor[i] = vNeighbor[j];
                 vNeighbor[j] = tmp;
                 std::string solution_child = vectorToString(vNeighbor);
-                int i_mother, j_mother; // todo : comment trouver i_moth et j_moth avec solution_moth ???
+
+                Neighbor mother_solution = getMotherSolution(neighbor_coll,solution, getIteration(transac_coll, transaction_id) - 1, transaction_id);
+                int i_mother = mother_solution.getI();
+                int j_mother = mother_solution.getJ();
                 // todo : neighbor_coll.find(solution_mother, getPreviousIteration()) car solution_mother a elle meme été un voison dans l'iteration précédente
 
                 Neighbor neigh(Neighbor(transaction_id, solution_child, i, j, i_mother, j_mother));
@@ -98,4 +101,36 @@ void cleanAllNeighbors(mongocxx::collection neighbor_coll, bsoncxx::oid  transac
     /*if(result) {
         std::cout << result->deleted_count() << "\n";
     }*/
+}
+
+Neighbor getMotherSolution(mongocxx::collection neighbor_coll, const std::string & neighbor_solution, const int & iteration, bsoncxx::oid  transaction_id){
+    auto filter = bsoncxx::builder::stream::document{};
+    filter << "solution" << neighbor_solution;
+    filter << "iteration" << iteration;
+    filter << "transaction_id" << transaction_id;
+
+    auto docFind = neighbor_coll.find_one(filter.view());
+
+    int move_i = -1;
+    int move_j = -1;
+
+    if(docFind){
+        move_i = docFind.value().view()["move_i"].get_int32();
+        move_j = docFind.value().view()["move_j"].get_int32();
+    }
+
+
+    return Neighbor(move_i, move_j);
+}
+
+Neighbor getNeighbor(mongocxx::collection neighbor_coll, const int & move_i, const int & move_j, const int & iteration, bsoncxx::oid  transaction_id){
+    auto filter = bsoncxx::builder::stream::document{};
+    filter << "move_i" << move_i;
+    filter << "move_j" << move_j;
+    filter << "iteration" << iteration;
+    filter << "transaction_id" << transaction_id;
+
+    auto docFind = neighbor_coll.find_one(filter.view());
+
+    return Neighbor(transaction_id, docFind.value().view()["solution"].get_utf8().value.to_string(), move_i, move_j, 0, 0);
 }

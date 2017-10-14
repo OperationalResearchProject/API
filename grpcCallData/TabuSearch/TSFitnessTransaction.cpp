@@ -26,6 +26,9 @@ void TSFitnessTransaction::Process() {
                                                  << bsoncxx::builder::stream::finalize
     );
 
+    int current_iteration =  getIteration(transac_coll, bsoncxx::oid(request_.id()));
+    std::cout <<"Iteration n° "<<current_iteration<< std::endl;
+
     // Find the best neighbor for this iteration
     int bestINeighbor = 0;
     double bestFitnessNeighbor = request_.fitnesses(0);
@@ -78,22 +81,28 @@ void TSFitnessTransaction::Process() {
 
         }
     }
+
+    Neighbor bestLocal = getNeighbor(neighbor_coll,request_.solutions(bestINeighbor).i(), request_.solutions(bestINeighbor).j(), current_iteration - 1, bsoncxx::oid(request_.id()));
 // todo : error, need to work on tabu list later
 //    addMoveInTabuList(tabu_list_coll, neighbor_coll, request_.solutions(bestINeighbor).mother_solution(), getIteration(transac_coll, bsoncxx::oid(request_.id())) - 1, bsoncxx::oid(request_.id()));
+
+    Neighbor motherOfTheBest = getMotherSolution(neighbor_coll,bestLocal.solution(), current_iteration - 1, bsoncxx::oid(request_.id()));
+    std::cout << "best mother move : " << motherOfTheBest.getI() <<" / "<< motherOfTheBest.getJ() <<std::endl;
     std::cout << "best fitness local  : " << bestFitnessNeighbor << std::endl;
-    std::cout << "best solution local : " << request_.solutions(bestINeighbor).mother_solution() << std::endl;
+    std::cout << "best solution local : " << bestLocal.solution() << std::endl<< std::endl;
+
 
     /*
      * set the response with neighbors of the best current Neighbors
      */
     reply_.set_id(request_.id());
 
-    std::vector<Neighbor> neighborsOfBest = getAllNeighbors(request_.solutions(bestINeighbor).mother_solution(), bsoncxx::oid(request_.id()), neighbor_coll, transac_coll, tabu_list_coll);
+    std::vector<Neighbor> neighborsOfBestLocal = getAllNeighbors(bestLocal.solution(), bsoncxx::oid(request_.id()), neighbor_coll, transac_coll, tabu_list_coll);
 
-    for (Neighbor neighbor:neighborsOfBest){
+    for (Neighbor neighbor:neighborsOfBestLocal){
 
         Solution* s = reply_.add_solutions();
-        s->set_mother_solution(request_.solutions(bestINeighbor).mother_solution());
+        s->set_mother_solution(bestLocal.solution());
         s->set_i(neighbor.getI());
         s->set_j(neighbor.getJ());
         s->set_mother_i(neighbor.getMotherI());

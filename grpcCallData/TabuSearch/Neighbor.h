@@ -12,7 +12,7 @@ class Neighbor {
 
 public:
     Neighbor(bsoncxx::oid  transaction_id, std::string solution, int move_i, int move_j, int move_mother_i, int move_mother_j);
-
+    Neighbor(int move_i, int move_j);
     const std::string solution(){ return solution_;};
     const int getI(){ return moveI;};
     const int getJ(){ return moveJ;};
