@@ -45,6 +45,8 @@ void TSFitnessTransaction::Process() {
 
     mongocxx::stdx::optional<bsoncxx::document::value> view = transac_coll.find_one(filterTransactionToSearch.view());
 
+    Neighbor bestLocal = getNeighbor(neighbor_coll,request_.solutions(bestINeighbor).i(), request_.solutions(bestINeighbor).j(), current_iteration - 1, bsoncxx::oid(request_.id()));
+
     if(view) {
         // get the best fitness of the transaction
         bsoncxx::document::view viewFitnessToSearch = *view;
@@ -58,11 +60,12 @@ void TSFitnessTransaction::Process() {
 
 
         // If the new fitness is better (Case of minimization) than the actual best fitness, then we replace the solution
+        std::cout << "best fitness global  : " << bestFitness << std::endl;
         if (bestFitness > bestFitnessNeighbor) {
 
             bsoncxx::builder::stream::document documentFitnessToInsert{};
             documentFitnessToInsert << "transaction_id" << request_.id();
-            documentFitnessToInsert << "solution" << request_.solutions(bestINeighbor).mother_solution();
+            documentFitnessToInsert << "solution" << bestLocal.solution();
             documentFitnessToInsert << "fitness" << bestFitnessNeighbor;
             documentFitnessToInsert << "params" << "";
 
@@ -82,7 +85,6 @@ void TSFitnessTransaction::Process() {
         }
     }
 
-    Neighbor bestLocal = getNeighbor(neighbor_coll,request_.solutions(bestINeighbor).i(), request_.solutions(bestINeighbor).j(), current_iteration - 1, bsoncxx::oid(request_.id()));
 
     addMoveInTabuList(tabu_list_coll, neighbor_coll, bestLocal.solution(), getIteration(transac_coll, bsoncxx::oid(request_.id())) - 1, bsoncxx::oid(request_.id()));
 
