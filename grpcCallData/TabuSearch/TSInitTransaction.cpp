@@ -47,6 +47,7 @@ void TSInitTransaction::Process() {
         Solution* s = reply_.add_solutions();
 
         s->set_mother_solution(request_.solution());
+        s->set_mother_fitness(request_.fitness());
         s->set_i(neighbor.getI());
         s->set_j(neighbor.getJ());
         s->set_mother_i(neighbor.getMotherI());

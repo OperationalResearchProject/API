@@ -89,9 +89,9 @@ void TSFitnessTransaction::Process() {
     addMoveInTabuList(tabu_list_coll, neighbor_coll, bestLocal.solution(), getIteration(transac_coll, bsoncxx::oid(request_.id())) - 1, bsoncxx::oid(request_.id()));
 
     Neighbor motherOfTheBest = getMotherSolution(neighbor_coll,bestLocal.solution(), current_iteration - 1, bsoncxx::oid(request_.id()));
-    std::cout << "best mother move : " << motherOfTheBest.getI() <<" / "<< motherOfTheBest.getJ() <<std::endl;
-    std::cout << "best fitness local  : " << bestFitnessNeighbor << std::endl;
-    std::cout << "best solution local : " << bestLocal.solution() << std::endl<< std::endl;
+//    std::cout << "best mother move : " << motherOfTheBest.getI() <<" / "<< motherOfTheBest.getJ() <<std::endl;
+//    std::cout << "best fitness local  : " << bestFitnessNeighbor << std::endl;
+//    std::cout << "best solution local : " << bestLocal.solution() << std::endl<< std::endl;
 
 
     /*
@@ -105,6 +105,7 @@ void TSFitnessTransaction::Process() {
 
         Solution* s = reply_.add_solutions();
         s->set_mother_solution(bestLocal.solution());
+        s->set_mother_fitness(request_.fitnesses(bestINeighbor));
         s->set_i(neighbor.getI());
         s->set_j(neighbor.getJ());
         s->set_mother_i(neighbor.getMotherI());
