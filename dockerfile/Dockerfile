@@ -44,7 +44,7 @@ RUN apt-get update && \
     make install && \
     cd ../.. && \
 # Projet Server
-    git clone https://github.com/geoffreyp/OperationalResearchWebAPI.git && \
+    git clone git@github.com:OperationalResearchProject/API.git && \
     cd OperationalResearchWebAPI/build && \
     cmake .. && \
     make
