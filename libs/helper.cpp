@@ -29,12 +29,9 @@ std::string getNeighbourSolution(const std::string& solution){
     v[random_integer1] = v[random_integer2];
     v[random_integer2] = str_tmp;
 
-    // convert solution from vector to string
-    std::ostringstream oss;
-    std::copy(v.begin(), v.end()-1, std::ostream_iterator<std::string>(oss, "-"));
-    oss << v.back();
 
-    return  oss.str();
+
+    return  vectorToString(v);
 }
 
 const std::vector<std::string> explode(const std::string& s, const char& c)
@@ -50,4 +47,30 @@ const std::vector<std::string> explode(const std::string& s, const char& c)
     if(buff != "") v.push_back(buff);
 
     return v;
+}
+
+const std::string vectorToString(std::vector<std::string> v){
+    // convert solution from vector to string
+    std::ostringstream oss;
+    std::copy(v.begin(), v.end()-1, std::ostream_iterator<std::string>(oss, "-"));
+    oss << v.back();
+
+    return  oss.str();
+}
+
+const int getIteration(mongocxx::collection transac_collection, bsoncxx::oid  transaction_id){
+
+    auto filterTransactionToSearch = bsoncxx::builder::stream::document{} ;
+    filterTransactionToSearch << "_id" << transaction_id;
+
+    mongocxx::stdx::optional<bsoncxx::document::value> view = transac_collection.find_one(filterTransactionToSearch.view());
+
+    if(view){
+        bsoncxx::document::view viewTransac = *view;
+        bsoncxx::document::element elt = viewTransac["iteration"];
+
+        return elt.get_int32();
+    } else{
+        return -1;
+    }
 }

@@ -1,13 +1,13 @@
-#include "HCStopTransaction.h"
+#include "TSStopTransaction.h"
 
 
-HCStopTransaction::HCStopTransaction(hcfi::HillClimberService::AsyncService* service, ServerCompletionQueue* cq, mongocxx::database db) :
-        HCBase(service, cq, db), responder_(&ctx_) {
+TSStopTransaction::TSStopTransaction(ts::TabouSearchService::AsyncService* service, ServerCompletionQueue* cq, mongocxx::database db) :
+        TSBase(service, cq, db), responder_(&ctx_) {
     service_->RequestStopTransaction(&ctx_, &request_, &responder_, cq_, cq_, this);
 }
 
-void HCStopTransaction::Process() {
-    new HCStopTransaction(service_, cq_, db_);
+void TSStopTransaction::Process() {
+    new TSStopTransaction(service_, cq_, db_);
 
     if(request_.message() == "done"){
         auto filterTransactionId = bsoncxx::builder::stream::document{} ;

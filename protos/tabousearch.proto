@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+
+package ts;
+
+service TabouSearchService {
+    rpc InitTransaction (InitTransactionRequest) returns (MultiFitnessResponse) {}
+    rpc SendFitness (MultiFitnessRequest) returns (MultiFitnessResponse) {}
+    rpc StopTransaction (StopRequest) returns (StopResponse) {}
+}
+
+import "messages.proto";

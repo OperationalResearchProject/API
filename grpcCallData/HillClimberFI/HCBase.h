@@ -1,6 +1,7 @@
 #ifndef OPERATIONALRESEARCHAPI_HCBASE_H
 #define OPERATIONALRESEARCHAPI_HCBASE_H
 #include "../CallData.h"
+#include "../../protoClassServer/hcfi.grpc.pb.h"
 
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
@@ -19,6 +20,7 @@ protected:
     mongocxx::collection fitness_coll;
     mongocxx::database db_;
     ServerContext ctx_;
+    hcfi::HillClimberService::AsyncService* service_;
 };
 
 #endif //OPERATIONALRESEARCHAPI_HCBASE_H

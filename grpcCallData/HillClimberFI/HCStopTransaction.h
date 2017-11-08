@@ -10,13 +10,12 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::ServerCompletionQueue;
 using grpc::Status;
-using hcfi::StopRequest;
-using hcfi::StopResponse;
+
 
 class HCStopTransaction : public HCBase{
 
 public:
-    HCStopTransaction(HillClimberService::AsyncService* service, ServerCompletionQueue* cq, mongocxx::database db);
+    HCStopTransaction(hcfi::HillClimberService::AsyncService* service, ServerCompletionQueue* cq, mongocxx::database db);
     void Process() override ;
 
 private:

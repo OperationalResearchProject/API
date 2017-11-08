@@ -6,6 +6,10 @@
 #include "grpcCallData/HillClimberFI/HCFitnessTransaction.h"
 #include "grpcCallData/HillClimberFI/HCStopTransaction.h"
 
+#include "grpcCallData/TabuSearch/TSInitTransaction.h"
+#include "grpcCallData/TabuSearch/TSFitnessTransaction.h"
+#include "grpcCallData/TabuSearch/TSStopTransaction.h"
+
 #define BDD "api"
 
 using grpc::Server;
@@ -14,9 +18,8 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::ServerCompletionQueue;
 using grpc::Status;
-using hcfi::InitTransactionRequest;
-using hcfi::FitnessResponse;
 using hcfi::HillClimberService;
+using ts::TabouSearchService;
 
 class ServerImpl final {
 public:
@@ -37,7 +40,8 @@ public:
 
         ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-        builder.RegisterService(&service_);
+        builder.RegisterService(&serviceHC_);
+        builder.RegisterService(&serviceTS_);
         cq_ = builder.AddCompletionQueue();
         server_ = builder.BuildAndStart();
 
@@ -52,9 +56,13 @@ private:
 
         // Spawn a all new CallData instances to serve new clients.
         // HillClimberFI CallData instances
-        new HCInitTransaction(&service_, cq_.get(), db);
-        new HCFitnessTransaction(&service_, cq_.get(), db);
-        new HCStopTransaction(&service_, cq_.get(), db);
+        new HCInitTransaction(&serviceHC_, cq_.get(), db);
+        new HCFitnessTransaction(&serviceHC_, cq_.get(), db);
+        new HCStopTransaction(&serviceHC_, cq_.get(), db);
+
+        new TSInitTransaction(&serviceTS_, cq_.get(), db);
+        new TSFitnessTransaction(&serviceTS_, cq_.get(), db);
+        new TSStopTransaction(&serviceTS_, cq_.get(), db);
         
         void* tag;
         bool ok;
@@ -66,7 +74,8 @@ private:
     }
 
     std::unique_ptr<ServerCompletionQueue> cq_;
-    HillClimberService::AsyncService service_;
+    HillClimberService::AsyncService serviceHC_;
+    TabouSearchService::AsyncService serviceTS_;
     std::unique_ptr<Server> server_;
     mongocxx::client conn;
     mongocxx::database db;

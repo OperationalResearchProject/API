@@ -1,17 +1,13 @@
-//
-// Created by geoffrey on 09/07/17.
-//
+#include "TSInitTransaction.h"
+#include "../../libs/tabousearch.h"
 
-#include "HCInitTransaction.h"
-#include "../../libs/helper.h"
-
-HCInitTransaction::HCInitTransaction(hcfi::HillClimberService::AsyncService* service, ServerCompletionQueue* cq, mongocxx::database db) :
-        HCBase(service, cq, db), responder_(&ctx_) {
-service_->RequestInitTransaction(&ctx_, &request_, &responder_, cq_, cq_, this);
+TSInitTransaction::TSInitTransaction(ts::TabouSearchService::AsyncService* service, ServerCompletionQueue* cq, mongocxx::database db) :
+        TSBase(service, cq, db), responder_(&ctx_) {
+    service_->RequestInitTransaction(&ctx_, &request_, &responder_, cq_, cq_, this);
 }
 
-void HCInitTransaction::Process() {
-    new HCInitTransaction(service_, cq_, db_);
+void TSInitTransaction::Process() {
+    new TSInitTransaction(service_, cq_, db_);
 
     // save data in mongodb
     bsoncxx::builder::stream::document documentTransaction{};
@@ -19,14 +15,15 @@ void HCInitTransaction::Process() {
     documentTransaction << "solution_initial" << request_.solution();
     documentTransaction << "solution_size" << request_.solutionsize();
     documentTransaction << "type" << request_.type();
-    documentTransaction << "algorithm" << "hillclimber_first_improvement";
+    documentTransaction << "algorithm" << "tabou_search";
+    documentTransaction << "iteration" << 0;
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     documentTransaction << "created_at" << bsoncxx::types::b_date(now);
     bsoncxx::types::value  transactionId = transac_coll.insert_one(documentTransaction.view())->inserted_id();
 
 
     bsoncxx::builder::stream::document documentFitness{};
-    documentFitness << "transaction_id" << transactionId;
+    documentFitness << "transaction_id" << transactionId.get_oid().value.to_string();
     documentFitness << "solution" << request_.solution();
     documentFitness << "fitness" << request_.fitness();
     bsoncxx::types::value  fitnessId = fitness_coll.insert_one(documentFitness.view())->inserted_id();
@@ -42,7 +39,23 @@ void HCInitTransaction::Process() {
 
     // set the response
     reply_.set_id(transactionId.get_oid().value.to_string());
-    reply_.set_solution(getNeighbourSolution(request_.solution()));
+
+    std::vector<Neighbor> vNeighbor = getAllNeighbors(request_.solution(), transactionId.get_oid().value, neighbor_coll, transac_coll, tabu_list_coll);
+
+    int i = 0;
+    for (Neighbor neighbor : vNeighbor ) {
+        Solution* s = reply_.add_solutions();
+
+        s->set_mother_solution(request_.solution());
+        s->set_mother_fitness(request_.fitness());
+        s->set_i(neighbor.getI());
+        s->set_j(neighbor.getJ());
+        s->set_mother_i(neighbor.getMotherI());
+        s->set_mother_j(neighbor.getMotherJ());
+
+        //std::cout << reply_.solutions(i).i() << " - "<<reply_.solutions(i).j()<< std::endl;
+        i++;
+    }
 
 
     responder_.Finish(reply_, Status::OK, this);

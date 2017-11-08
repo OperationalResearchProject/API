@@ -3,22 +3,22 @@
 
 #include <grpc++/grpc++.h>
 #include <grpc/support/log.h>
-#include "hcfi.grpc.pb.h"
+
+#include "../protoClassServer/messages.grpc.pb.h"
+
 
 
 using grpc::ServerContext;
 using grpc::ServerCompletionQueue;
-using hcfi::HillClimberService;
 
 class CallData {
 public:
-    CallData(HillClimberService::AsyncService* service, ServerCompletionQueue* cq);
+    CallData(ServerCompletionQueue* cq);
     virtual ~CallData() {}
     void proceed();
 
 protected:
     virtual void Process() = 0;
-    HillClimberService::AsyncService* service_;
     ServerCompletionQueue* cq_;
 
 private:

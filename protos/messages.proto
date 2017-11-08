@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+
+
+message InitTransactionRequest {
+    string customer = 1;
+    int32 solutionSize = 2;
+    double fitness = 3;
+    string solution = 4;
+    string algorithm = 5;
+    string type = 6;
+}
+
+message GenericFitnessResponse {
+    string id = 1;
+    string solution = 2;
+    int32 iteration = 3;
+}
+
+message GenericFitnessRequest {
+    string id = 1;
+    double fitness = 2;
+    string solution = 3;
+}
+message MultiFitnessResponse {
+    string id = 1;
+    repeated Solution solutions = 2;
+    int32 iteration = 3;
+}
+
+message MultiFitnessRequest {
+    string id = 1;
+    repeated double fitnesses = 2;
+    repeated Solution solutions = 3;
+}
+
+message StopRequest {
+    string id = 1;
+    string message = 2;
+}
+
+message StopResponse {
+    string id = 1;
+    string solution = 2;
+    double fitness = 3;
+}
+
+message Solution {
+    string mother_solution = 1;
+    double mother_fitness = 6;
+    int32 mother_i = 2;
+    int32 mother_j = 3;
+    int32 i = 4;
+    int32 j = 5;
+}
