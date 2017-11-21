@@ -1,6 +1,6 @@
 FROM ubuntu:xenial
 
-MAINTAINER Florian Vansteene <florian.vansteene@gmail.com> 
+LABEL maintainers="geoffrey@pruvost.xyz, florian.vansteene@gmail.com"
 
 # Apt packages
 ADD apt_requirements.txt apt_requirements.txt
@@ -44,12 +44,12 @@ RUN apt-get update && \
     make install && \
     cd ../.. && \
 # Projet Server
-    git clone git@github.com:OperationalResearchProject/API.git && \
-    cd OperationalResearchWebAPI/build && \
+    git clone https://github.com/OperationalResearchProject/API.git && \
+    cd API/build && \
     cmake .. && \
     make
 
-WORKDIR /OperationalResearchWebAPI/build
+WORKDIR /API/build
 
 #ENTRYPOINT ["bash"]
 #RUN echo "export PATH=/usr/bin/"
