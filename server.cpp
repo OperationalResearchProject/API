@@ -25,7 +25,7 @@ class ServerImpl final {
 public:
     ServerImpl() {
         mongocxx::instance inst{};
-        conn = mongocxx::uri("mongodb://127.0.0.1:27017");
+        conn = mongocxx::uri("mongodb://172.17.0.3:27017");
         db = conn[BDD];
     }
 
