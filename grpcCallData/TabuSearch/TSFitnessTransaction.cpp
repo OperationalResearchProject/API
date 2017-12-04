@@ -43,13 +43,13 @@ void TSFitnessTransaction::Process() {
     auto filterTransactionToSearch = bsoncxx::builder::stream::document{} ;
     filterTransactionToSearch << "_id" << bsoncxx::oid(request_.id());
 
-    mongocxx::stdx::optional<bsoncxx::document::value> view = transac_coll.find_one(filterTransactionToSearch.view());
+    mongocxx::stdx::optional<bsoncxx::document::value> viewTransaction = transac_coll.find_one(filterTransactionToSearch.view());
 
     Neighbor bestLocal = getNeighbor(neighbor_coll,request_.solutions(bestINeighbor).i(), request_.solutions(bestINeighbor).j(), current_iteration - 1, bsoncxx::oid(request_.id()));
 
-    if(view) {
+    if(viewTransaction) {
         // get the best fitness of the transaction
-        bsoncxx::document::view viewFitnessToSearch = *view;
+        bsoncxx::document::view viewFitnessToSearch = *viewTransaction;
         bsoncxx::document::element eltBestFitnessId = viewFitnessToSearch["best_fitness_id"];
 
         auto filterFitnessToSearch = bsoncxx::builder::stream::document{};
@@ -60,8 +60,8 @@ void TSFitnessTransaction::Process() {
 
 
         // If the new fitness is better (Case of minimization) than the actual best fitness, then we replace the solution
-        std::cout << "best fitness global  : " << bestFitness << std::endl;
-        if (bestFitness > bestFitnessNeighbor) {
+        //std::cout << "best fitness global  : " << bestFitness << std::endl;
+        if (bestFitness > bestFitnessNeighbor && moveIsAllowed(tabu_list_coll,bestLocal.getI(), bestLocal.getJ() ,bsoncxx::oid(request_.id()),current_iteration)) {
 
             bsoncxx::builder::stream::document documentFitnessToInsert{};
             documentFitnessToInsert << "transaction_id" << request_.id();
@@ -104,12 +104,16 @@ void TSFitnessTransaction::Process() {
     for (Neighbor neighbor:neighborsOfBestLocal){
 
         Solution* s = reply_.add_solutions();
+
+        // the best local solution will be the future mother
         s->set_mother_solution(bestLocal.solution());
         s->set_mother_fitness(request_.fitnesses(bestINeighbor));
-        s->set_i(neighbor.getI());
-        s->set_j(neighbor.getJ());
         s->set_mother_i(neighbor.getMotherI());
         s->set_mother_j(neighbor.getMotherJ());
+
+        s->set_i(neighbor.getI());
+        s->set_j(neighbor.getJ());
+
     }
 
 
