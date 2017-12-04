@@ -61,7 +61,7 @@ void TSFitnessTransaction::Process() {
 
         // If the new fitness is better (Case of minimization) than the actual best fitness, then we replace the solution
         //std::cout << "best fitness global  : " << bestFitness << std::endl;
-        if (bestFitness > bestFitnessNeighbor) {
+        if (bestFitness > bestFitnessNeighbor && moveIsAllowed(tabu_list_coll,bestLocal.getI(), bestLocal.getJ() ,bsoncxx::oid(request_.id()),current_iteration)) {
 
             bsoncxx::builder::stream::document documentFitnessToInsert{};
             documentFitnessToInsert << "transaction_id" << request_.id();

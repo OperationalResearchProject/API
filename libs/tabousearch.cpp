@@ -63,11 +63,10 @@ std::vector<Neighbor> getAllNeighbors(const std::string& solution, bsoncxx::oid 
 
     std::vector<std::string> vSolution{explode(solution, '-')};
     std::vector<Neighbor> vAllNeighbors;
-    int iteration = getIteration(transac_coll, transaction_id);
 
     for (int i=0; i < vSolution.size(); i++) {
         for (int j=0; j < vSolution.size(); j++) {
-            if (i != j && moveIsAllowed(tabu_coll,i,j, transaction_id, iteration)){
+            if (i != j){
                 //std::cout << "move "<< i <<"-"<<j <<"is allowed at iteration"<< iteration <<" : "<< moveIsAllowed(tabu_coll,i,j, transaction_id, iteration) << std::endl;
                 std::vector<std::string> vNeighbor = vSolution;
                 std::string tmp = vNeighbor[i];
