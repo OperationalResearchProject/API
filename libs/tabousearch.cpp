@@ -77,7 +77,6 @@ std::vector<Neighbor> getAllNeighbors(const std::string& solution, bsoncxx::oid 
                 Neighbor mother_solution = getMotherSolution(neighbor_coll,solution, getIteration(transac_coll, transaction_id) - 1, transaction_id);
                 int i_mother = mother_solution.getI();
                 int j_mother = mother_solution.getJ();
-                // todo : neighbor_coll.find(solution_mother, getPreviousIteration()) car solution_mother a elle meme été un voison dans l'iteration précédente
 
                 Neighbor neigh(Neighbor(transaction_id, solution_child, i, j, i_mother, j_mother));
                 neigh.save(neighbor_coll, transac_coll);
