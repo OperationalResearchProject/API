@@ -14,7 +14,7 @@
 #include <mongocxx/collection.hpp>
 
 std::string generateId();
-std::string getNeighbourSolution(const std::string& solution);
+std::string getNeighbourSolution(const std::string& solution, const bool isKnapSack = false);
 const std::vector<std::string> explode(const std::string& s, const char& c);
 const std::string vectorToString(std::vector<std::string> v);
 const int getIteration(mongocxx::collection transac_collection, bsoncxx::oid  transaction_id);

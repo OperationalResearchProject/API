@@ -23,6 +23,8 @@ void HCFitnessTransaction::Process() {
         bsoncxx::document::view viewFitnessToSearch = *view;
         bsoncxx::document::element eltBestFitnessId = viewFitnessToSearch["best_fitness_id"];
 
+        bool isKnapSack = viewFitnessToSearch["type"].get_utf8().value.to_string() == "knapsack";
+
         auto filterFitnessToSearch = bsoncxx::builder::stream::document{};
         filterFitnessToSearch << "_id" << eltBestFitnessId.get_oid();
 
@@ -60,7 +62,7 @@ void HCFitnessTransaction::Process() {
          */
 
         reply_.set_id(request_.id());
-        reply_.set_solution(getNeighbourSolution(bestSolution));
+        reply_.set_solution(getNeighbourSolution(bestSolution, isKnapSack));
     }
 
     responder_.Finish(reply_, Status::OK, this);

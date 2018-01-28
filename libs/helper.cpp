@@ -14,22 +14,26 @@ std::string generateId(){
     return res;
 };
 
-std::string getNeighbourSolution(const std::string& solution){
+std::string getNeighbourSolution(const std::string& solution, const bool isKnapSack){
     // convert solution from string to vector
     std::vector< std::string> v{explode(solution, '-')};
 
-    // swap 2 elements
     std::random_device rd;
     std::mt19937 rng(rd());    // random-number engine used Mersenne-Twister
     std::uniform_int_distribution<int> uni(0, (int) v.size() - 1);
-    auto random_integer1 = uni(rng);
-    auto random_integer2 = uni(rng);
 
-    std::string str_tmp = v[random_integer1];
-    v[random_integer1] = v[random_integer2];
-    v[random_integer2] = str_tmp;
+    if(!isKnapSack) {
+        // swap 2 elements
+        auto random_integer1 = uni(rng);
+        auto random_integer2 = uni(rng);
 
-
+        std::string str_tmp = v[random_integer1];
+        v[random_integer1] = v[random_integer2];
+        v[random_integer2] = str_tmp;
+    }else{
+        auto random_integer = uni(rng);
+        v[random_integer] = v[random_integer] == "0" ? "1" : "0";
+    }
 
     return  vectorToString(v);
 }

@@ -41,8 +41,9 @@ void HCInitTransaction::Process() {
 
 
     // set the response
+    bool isKnapSack = request_.type()=="knapsack";
     reply_.set_id(transactionId.get_oid().value.to_string());
-    reply_.set_solution(getNeighbourSolution(request_.solution()));
+    reply_.set_solution(getNeighbourSolution(request_.solution(), isKnapSack));
 
 
     responder_.Finish(reply_, Status::OK, this);
